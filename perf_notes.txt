@@ -1,0 +1,29 @@
+Monothread
+2020-08-31 19:22:02.345  INFO 9044 --- [  restartedMain] com.example.demo.DataLoader              : Start
+2020-08-31 19:25:25.553  INFO 9044 --- [  restartedMain] com.example.demo.DataLoader              : End
+3 mins 23 (203 secs) pour 10_000
+             1 sec     => 49.26 / sec
+
+Concurrent 1
+2020-08-31 19:52:10.999  INFO 27512 --- [  restartedMain] com.example.demo.DataLoader              : Start
+2020-08-31 19:55:52.964  INFO 27512 --- [  restartedMain] com.example.demo.DataLoader              : End
+3 mins 42 (222 secs) pour 10_000
+             1 sec     => 45.04 / sec
+
+Concurrent 5
+2020-08-31 19:58:41.940  INFO 16816 --- [  restartedMain] com.example.demo.DataLoader              : Start
+2020-08-31 20:00:25.663  INFO 16816 --- [  restartedMain] com.example.demo.DataLoader              : End
+1 mins 19 (79 secs)  pour 10_000
+             1 sec     => 126.58 / sec
+
+Concurrent 25
+2020-08-31 20:03:09.781  INFO 19616 --- [  restartedMain] com.example.demo.DataLoader              : Start
+2020-08-31 20:04:54.323  INFO 19616 --- [  restartedMain] com.example.demo.DataLoader              : End
+1 mins 45 (105 secs) pour 10_000
+             1 sec     => 95.23 / sec
+
+Concurrent 15
+2020-08-31 20:06:21.907  INFO 7408 --- [  restartedMain] com.example.demo.DataLoader              : Start
+2020-08-31 20:08:33.255  INFO 7408 --- [  restartedMain] com.example.demo.DataLoader              : End
+1 mins 12 (72 secs)  pour 10_000
+             1 sec     => 138.88 / sec
