@@ -27,3 +27,15 @@ Concurrent 15
 2020-08-31 20:08:33.255  INFO 7408 --- [  restartedMain] com.example.demo.DataLoader              : End
 1 mins 12 (72 secs)  pour 10_000
              1 sec     => 138.88 / sec
+
+Reactor 1
+2020-08-31 21:04:08.906  INFO 32984 --- [  restartedMain] com.example.demo.DataLoader              : Start
+2020-08-31 21:05:51.497  INFO 32984 --- [  restartedMain] com.example.demo.DataLoader              : End
+1 min 33 (93 secs)   pour 10_000
+             1 sec     => 107.52 / sec
+
+Reactor 5
+2020-08-31 21:08:34.770  INFO 23740 --- [  restartedMain] com.example.demo.DataLoader              : Start
+2020-08-31 21:10:40.091  INFO 23740 --- [  restartedMain] com.example.demo.DataLoader              : End
+2 min 06 (126 secs)   pour 10_000
+              1 sec     => 79.36 / sec
