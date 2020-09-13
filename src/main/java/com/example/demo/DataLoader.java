@@ -3,18 +3,14 @@ package com.example.demo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.ClientResponse;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.FluxSink;
+import reactor.core.publisher.UnicastProcessor;
 
 import javax.annotation.PostConstruct;
+import java.time.Duration;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Component
@@ -23,36 +19,36 @@ public class DataLoader {
     private static final Logger LOGGER = LoggerFactory.getLogger(DataLoader.class);
 
     @Autowired
-    @Qualifier("my-webClient")
-    private WebClient webClient;
+    private FlowRepository flowRepository;
 
     @PostConstruct
-    public void init() {
-        LOGGER.info("Start");
+    public void init() throws InterruptedException {
+        UnicastProcessor<Flow> processor = UnicastProcessor.create();
+        FluxSink<Flow> fluxSink = processor.sink();
 
-        List<Mono<ClientResponse>> flows = IntStream.range(0, 10_000)
-                .mapToObj(i -> persistRandomFlow())
-                .collect(Collectors.toList());
+        Flux<Flow> result = processor.bufferTimeout(1000, Duration.ofMillis(1000))
+                .delayElements(Duration.ofMillis(100))
+                .flatMap(this::persistFlows);
 
-        flows.forEach(flow -> {
-            ClientResponse r = flow.block();
-            if(!r.statusCode().is2xxSuccessful()) {
-                r.bodyToFlux(String.class).subscribe(body -> {
-                    LOGGER.error("Received {} status: {}", r.statusCode(), body);
-                });
-            }
-        });
+        LOGGER.info("Started result");
+        result.subscribe(
+                flow -> {},
+                error -> LOGGER.error("oh no there is an error ! \n\n{}", error.getMessage()),
+                () -> LOGGER.info("Completed result")
+        );
 
-        LOGGER.info("End");
+        for(int i=0; i<10; i++) {
+            IntStream.range(0, 100_000)
+                    .mapToObj(j -> Flow.random())
+                    .forEach(fluxSink::next);
+            LOGGER.info("pack sent");
+            Thread.sleep(15000);
+        }
+
+        fluxSink.complete();
     }
 
-    private Mono<ClientResponse> persistRandomFlow() {
-        Flow flow = Flow.random();
-
-        return webClient.post()
-                .uri("/flows/_doc")
-                .body(BodyInserters.fromValue(flow))
-                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .exchange();
+    private Flux<Flow> persistFlows(List<Flow> flows) {
+        return flowRepository.saveAll(flows);
     }
 }
